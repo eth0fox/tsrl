@@ -1,0 +1,25 @@
+{
+  "name": "tsrl",
+  "version": "1.0.0",
+  "description": "ResoniteLink library written in TypeScript",
+  "keywords": [
+    "resonite",
+    "frooxengine"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://git.boxfox.es/fox/tsrl.git"
+  },
+  "license": "MIT",
+  "author": "U-TaylorRobinson",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.8",
+    "@types/ws": "^8.18.1",
+    "ws": "^8.19.0"
+  }
+}
