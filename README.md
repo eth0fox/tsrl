@@ -4,6 +4,12 @@ tsrl (TypeScript ResoniteLink) is a library for interacting with ResoniteLink in
 
 In browsers it should Just Work, but Node.js' built in WebSocket implementation doesnt seem to work with Resonite (at least in v24.6.0 on Windows), so you should install the `ws` package.
 
+## Installing
+
+```
+npm i @eth0fox/tsrl
+```
+
 
 ## Usage
 
@@ -11,7 +17,7 @@ Connect to Resonite by first, opening a Resonite world where you are the host, g
 
 ```ts
 // Standard
-import { ResoniteLink } from "./tsrl.ts";
+import { ResoniteLink } from "@eth0fox/tsrl";
 
 const PORT = 1337 // change this
 let link = await ResoniteLink.connect("ws://127.0.0.1:" + PORT);
@@ -19,7 +25,7 @@ let link = await ResoniteLink.connect("ws://127.0.0.1:" + PORT);
 
 ```ts
 // Node.js users should use: 
-import { ResoniteLink } from "./tsrl.ts";
+import { ResoniteLink } from "@eth0fox/tsrl";
 import { WebSocket } from "ws";
 
 const PORT = 1337 // change this
