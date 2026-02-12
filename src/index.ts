@@ -107,5 +107,18 @@ export class ResoniteLink {
         dataRGBAFloat32: BinaryPayload
     ) { return (await this.call({ $type: 'importTexture2DRawDataHDR', width, height }, dataRGBAFloat32)).assetURL; }
     
+    async importMeshJSON(mesh: TSRL.Mesh.Mesh) { return (await this.call({ $type: 'importMeshJSON', ...mesh })).assetURL; }
+    async importMeshRawData(meta: Omit<TSRL.ImportMeshRawDataMessage, "$type">, data: BinaryPayload) { return (await this.call({ $type: 'importMeshRawData', ...meta }, data)).assetURL; }
+    
+    async importAudioClipFile(filePath: string) { return (await this.call({ $type: 'importAudioClipFile', filePath })).assetURL; }
+    async importAudioClipRawData(
+        channelCount: number, 
+        sampleRate: number,
+        sampleCount: number, 
+        data: BinaryPayload
+    ) { return (await this.call({ $type: 'importAudioClipRawData',sampleCount, sampleRate, channelCount }, data)).assetURL; }
+
+    
+    
 
 }
