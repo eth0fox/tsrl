@@ -74,6 +74,16 @@ export class ResoniteLink {
     }
 
 
+    async requestSessionData() { 
+        let data = await this.call({ $type: 'requestSessionData' }) as any;
+        delete data.sourceMessageId;
+        delete data.success;
+        delete data.errorInfo;
+        return data as Omit<TSRL.SessionDataResponse, 'success' | 'errorInfo' | 'sourceMessageId'>;
+    }
+
+    async dataModelOperationBatch(operations: TSRL.DataModelOperationClientMessage[]) { return (await this.call({ $type: 'dataModelOperationBatch', operations })); }
+
     async slotGet(
         slotId: TSRL.GetSlotMessage['slotId'] = "Root",
         includeComponentData: boolean = false,
@@ -118,7 +128,7 @@ export class ResoniteLink {
         data: BinaryPayload
     ) { return (await this.call({ $type: 'importAudioClipRawData',sampleCount, sampleRate, channelCount }, data)).assetURL; }
 
-    
+
     
 
 }

@@ -40,6 +40,7 @@ declare namespace TSRL.DataModel {
     export type ulong4 = VectorType<ulong, 4>;
     export type sbyte2 = VectorType<sbyte, 2>;
     export type sbyte3 = VectorType<sbyte, 3>;
+    
     export type sbyte4 = VectorType<sbyte, 4>;
     export type short2 = VectorType<short, 2>;
     export type short3 = VectorType<short, 3>;

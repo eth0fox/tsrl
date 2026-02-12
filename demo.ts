@@ -2,7 +2,7 @@
 import { readFileSync } from "fs";
 import { inspect } from "node:util";
 import { WebSocket } from "ws";
-import { ResoniteLink } from "./src/index.js";
+import { ResoniteLink } from "./src/index.ts";
 
 const host = process.argv[2];
 if (!host) {
@@ -12,6 +12,8 @@ if (!host) {
 
 
 let link = await ResoniteLink.connect(host, WebSocket as any);
+
+console.log(await link.requestSessionData());
 
 let testSlot = await link.slotAdd("Root", {
     name: { value: "Test Slot" }

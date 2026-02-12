@@ -85,6 +85,21 @@ declare namespace TSRL {
         $type: string;
     }
 
+    export interface RequestSessionDataMessage extends BaseMessage {
+        $type: 'requestSessionData';
+    }
+
+    /**
+     *  Batch of individual data model operation messages. All of these are guaranteed to be processed in sequence
+     *  without any engine updates in between. This can prevent the engine updates or user actions affecting the updated objects.
+     *  IMPORTANT!!! You can only include messages that derive from DataModelOperation base class.
+     * Other message types cannot be batched, as they are not processed in sync with the data model.
+     */
+    export interface DataModelOperationBatchMessage extends BaseMessage {
+        $type: 'dataModelOperationBatch';
+        operations: DataModelOperationClientMessage[]; 
+    }
+
     export interface GetSlotMessage extends BaseMessage {
         $type: 'getSlot';
         slotId: 'Root' | (string & {});
@@ -212,8 +227,7 @@ declare namespace TSRL {
 
 
 
-    
-    export type ClientMessage = 
+    export type DataModelOperationClientMessage = 
         | GetSlotMessage
         | AddSlotMessage
         | UpdateSlotMessage
@@ -222,6 +236,11 @@ declare namespace TSRL {
         | AddComponentMessage
         | UpdateComponentMessage
         | RemoveComponentMessage
+    
+    export type ClientMessage = 
+        | RequestSessionDataMessage
+        | DataModelOperationBatchMessage
+        | DataModelOperationClientMessage
         | ImportTexture2DFileMessage
         | ImportTexture2DRawDataMessage
         | ImportTexture2DRawDataHDRMessage
@@ -235,6 +254,29 @@ declare namespace TSRL {
         sourceMessageId: string;
         success: boolean;
         errorInfo?: string;
+    }
+
+    export interface SessionDataResponse extends Response {
+        resoniteVersion: string;
+        resoniteLinkVersion: string;
+        /**
+         * An ID uniquely identifying this ResoniteLink session for a given Resonite session
+         * The ID is unique for as long as particular session runs on Resonite's end
+         * The ID is NOT guaranteed to be unique for different Resonite worlds with ResoniteLink enabled
+         * The ID is NOT guaranteed to be unique when the Resonite world restarts
+         * You can use this ID to ensure that any ID's you generate do not conflict with any other
+         * ResoniteLink session for a given Resonite world.
+         */
+        uniqueSessionId: string;
+    }
+
+    /**
+     * Represents a response to a batch of messages, e.g DataModelOperationBatch, containing individual responses to each.
+     * IMPORTANT: Note that Success on this message itself only indicates that the batch itself was processed successfully,
+     * but not necessarily that each individual message has succeeded. You need to check each individual response for this.
+     */
+    export interface BatchResponse extends Response {
+        responses: MessageResponsesMap[DataModelOperationClientMessage['$type']][];
     }
 
     export interface SlotDataResponse extends Response {
@@ -253,7 +295,15 @@ declare namespace TSRL {
         assetURL: string;
     }
 
+    
+
+    
+
     export type MessageResponsesMap = {
+        requestSessionData: SessionDataResponse;
+
+        dataModelOperationBatch: BatchResponse;
+
         getSlot: SlotDataResponse;
         addSlot: Response;
         updateSlot: Response;
