@@ -1,5 +1,5 @@
 {
-  "name": "tsrl",
+  "name": "@eth0fox/tsrl",
   "version": "2.0.0",
 
   "type": "module",
@@ -14,7 +14,7 @@
     "typescript": "^5.9.3"
   },
 
-  "description": "ResoniteLink library written in TypeScript",
+  "description": "tsrl (TypeScript ResoniteLink) is a library for interacting with ResoniteLink in a JavaScript based application.",
   "keywords": [
     "resonite",
     "frooxengine"

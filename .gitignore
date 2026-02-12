@@ -1,3 +1,4 @@
 sunglass.raw
 node_modules/
 dist/
+*.tgz

@@ -4,6 +4,7 @@ tsrl (TypeScript ResoniteLink) is a library for interacting with ResoniteLink in
 
 In browsers it should Just Work, but Node.js' built in WebSocket implementation doesnt seem to work with Resonite (at least in v24.6.0 on Windows), so you should install the `ws` package.
 
+
 ## Usage
 
 Connect to Resonite by first, opening a Resonite world where you are the host, going to the Session tab in the Dashboard and clicking "Enable ResoniteLink". Use the port number provided to connect.
