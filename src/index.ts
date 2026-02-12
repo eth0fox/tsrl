@@ -73,16 +73,14 @@ export class ResoniteLink {
         });
     }
 
-
-    async requestSessionData() { 
-        let data = await this.call({ $type: 'requestSessionData' }) as any;
-        delete data.sourceMessageId;
-        delete data.success;
-        delete data.errorInfo;
-        return data as Omit<TSRL.SessionDataResponse, 'success' | 'errorInfo' | 'sourceMessageId'>;
+    private stripBaseResponseFields<T extends TSRL.Response>(response: T): Omit<T, 'success' | 'errorInfo' | 'sourceMessageId'> {
+       const { success, errorInfo, sourceMessageId, ...rest } = response;
+        return rest;
     }
 
-    async dataModelOperationBatch(operations: TSRL.DataModelOperationClientMessage[]) { return (await this.call({ $type: 'dataModelOperationBatch', operations })); }
+
+    async requestSessionData() { return this.stripBaseResponseFields(await this.call({ $type: 'requestSessionData' })) }
+    async dataModelOperationBatch(operations: TSRL.DataModelOperationClientMessage[]) { return (await this.call({ $type: 'dataModelOperationBatch', operations })).responses; }
 
     async slotGet(
         slotId: TSRL.GetSlotMessage['slotId'] = "Root",
@@ -129,6 +127,14 @@ export class ResoniteLink {
     ) { return (await this.call({ $type: 'importAudioClipRawData',sampleCount, sampleRate, channelCount }, data)).assetURL; }
 
 
+
+
+    async getTypeDefinition(type: string) { return (await this.call({ $type: 'getTypeDefinition', type })).definition; }
+    async getGenericTypeDefinition(genericInstanceType: string) { return (await this.call({ $type: 'getGenericTypeDefinition', genericInstanceType })).definition; }
+    async getEnumDefinition(type: string) { return (await this.call({ $type: 'getEnumDefinition', type })).definition; }
+    async getComponentDefinition(componentType: string, flattened = true) { return (await this.call({ $type: 'getComponentDefinition', componentType, flattened })).definition; }
+    async getSyncObjectDefinition(syncObjectType: string, flattened = true) { return (await this.call({ $type: 'getSyncObjectDefinition', syncObjectType, flattened })).definition; }
+    async getComponentTypeList(categoryPath = '*') { return this.stripBaseResponseFields(await this.call({ $type: 'getComponentTypeList', categoryPath })); }
     
 
 }

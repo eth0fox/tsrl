@@ -1,5 +1,6 @@
 /// <reference path="./primitives.d.ts" />
 /// <reference path="./meshImport.d.ts" />
+/// <reference path="./reflection.d.ts" />
 declare namespace TSRL.DataModel {
 
     export interface Member {
@@ -117,15 +118,15 @@ declare namespace TSRL {
          */
         depth: number;
     }
-    export interface AddSlotMessage {
+    export interface AddSlotMessage extends BaseMessage  {
         $type: 'addSlot';
         data: Partial<TSRL.DataModel.Slot>;
     }
-    export interface UpdateSlotMessage {
+    export interface UpdateSlotMessage extends BaseMessage  {
         $type: 'updateSlot';
         data: Partial<TSRL.DataModel.Slot> & Pick<TSRL.DataModel.Slot, 'id'>;
     }
-    export interface RemoveSlotMessage {
+    export interface RemoveSlotMessage extends BaseMessage  {
         $type: 'removeSlot';
         slotId: string;
     }
@@ -134,17 +135,17 @@ declare namespace TSRL {
         $type: 'getComponent';
        componentId: string;
     }
-    export interface AddComponentMessage {
+    export interface AddComponentMessage extends BaseMessage  {
         $type: 'addComponent';
         data: Partial<TSRL.DataModel.Component>;
         // ID of the slot to add this component to
         containerSlotId: string;
     }
-    export interface UpdateComponentMessage {
+    export interface UpdateComponentMessage extends BaseMessage  {
         $type: 'updateComponent';
         data: Partial<TSRL.DataModel.Component> & Pick<TSRL.DataModel.Component, 'id'>;
     }
-    export interface RemoveComponentMessage {
+    export interface RemoveComponentMessage extends BaseMessage  {
         $type: 'removeComponent';
         componentId: string;
     }
@@ -227,6 +228,10 @@ declare namespace TSRL {
 
 
 
+
+
+
+
     export type DataModelOperationClientMessage = 
         | GetSlotMessage
         | AddSlotMessage
@@ -238,9 +243,11 @@ declare namespace TSRL {
         | RemoveComponentMessage
     
     export type ClientMessage = 
+        | ReflectionClientMessage
+        | DataModelOperationClientMessage
+        //
         | RequestSessionDataMessage
         | DataModelOperationBatchMessage
-        | DataModelOperationClientMessage
         | ImportTexture2DFileMessage
         | ImportTexture2DRawDataMessage
         | ImportTexture2DRawDataHDRMessage
@@ -251,6 +258,7 @@ declare namespace TSRL {
     
     
     export interface Response {
+        $type: string;
         sourceMessageId: string;
         success: boolean;
         errorInfo?: string;
@@ -323,6 +331,14 @@ declare namespace TSRL {
 
         importAudioClipFile: AssetDataResponse;
         importAudioClipRawData: AssetDataResponse;
+
+
+        getTypeDefinition: TypeDefinitionResponse;
+        getGenericTypeDefinition: TypeDefinitionResponse;
+        getEnumDefinition: EnumDefinitionResponse;
+        getComponentDefinition: ComponentDefinitionResponse;
+        getSyncObjectDefinition: SyncObjectDefinitionResponse;
+        getComponentTypeList: ComponentTypeListResponse;
 
 
     }
