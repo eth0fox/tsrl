@@ -1,8 +1,9 @@
+import type { Component } from './types/models/dataModel.js';
+import type { Mesh } from './types/models/mesh.js';
+import type { ColorProfile } from './types/models/valueTypes.js';
+import type { AddSlotMessage, BaseResponse, ClientMessage, DataModelOperationClientMessage, GetSlotMessage, ImportMeshRawDataMessage, MessageResponsesMap, UpdateSlotMessage } from './types/resonitelink/resonitelink.js';
 
-/// <reference path="./types/types.d.ts" />
 export type BinaryPayload = Exclude<Parameters<WebSocket['send']>[0], string>;
-
-
 export class ResoniteLink {
     socket: WebSocket;
     idPrefix = 'tsrl_' + Math.random().toString(36).slice(2) + '_';
@@ -39,7 +40,7 @@ export class ResoniteLink {
         this.inflightMessages.clear();
     }
 
-    private onMessage(event: { data: any }) {
+    private onMessage(event: { data: string }) {
         this.debugReceive?.(event.data);
         if (event.data == "") return;
         try {
@@ -61,7 +62,7 @@ export class ResoniteLink {
         }
     }
 
-    async call<T extends TSRL.ClientMessage>(message: T, binaryPayload?: BinaryPayload): Promise<TSRL.MessageResponsesMap[T['$type']]> {
+    async call<T extends ClientMessage>(message: T, binaryPayload?: BinaryPayload): Promise<MessageResponsesMap[T['$type']]> {
         if (this.socket.readyState !== WebSocket.OPEN) throw new Error('WebSocket is not open');
         return new Promise((resolve, reject) => {
             const messageId = this.idPrefix + (this.messageIdCounter++).toString(36);
@@ -73,32 +74,32 @@ export class ResoniteLink {
         });
     }
 
-    private stripBaseResponseFields<T extends TSRL.Response>(response: T): Omit<T, 'success' | 'errorInfo' | 'sourceMessageId'> {
+    private stripBaseResponseFields<T extends BaseResponse>(response: T): Omit<T, 'success' | 'errorInfo' | 'sourceMessageId'> {
        const { success, errorInfo, sourceMessageId, ...rest } = response;
         return rest;
     }
 
 
     async requestSessionData() { return this.stripBaseResponseFields(await this.call({ $type: 'requestSessionData' })) }
-    async dataModelOperationBatch(operations: TSRL.DataModelOperationClientMessage[]) { return (await this.call({ $type: 'dataModelOperationBatch', operations })).responses; }
+    async dataModelOperationBatch(operations: DataModelOperationClientMessage[]) { return (await this.call({ $type: 'dataModelOperationBatch', operations })).responses; }
 
     async slotGet(
-        slotId: TSRL.GetSlotMessage['slotId'] = "Root",
+        slotId: GetSlotMessage['slotId'] = "Root",
         includeComponentData: boolean = false,
         depth: number = 0
     ) { return (await this.call({ $type: 'getSlot', slotId, includeComponentData, depth })).data; }
-    async slotUpdate(slotId: string, data: Omit<TSRL.UpdateSlotMessage['data'], "id">) { return (await this.call({ $type: 'updateSlot', data: { id: slotId, ...data } })); }
+    async slotUpdate(slotId: string, data: Omit<UpdateSlotMessage['data'], "id">) { return (await this.call({ $type: 'updateSlot', data: { id: slotId, ...data } })); }
     async slotRemove(slotId: string) { return (await this.call({ $type: 'removeSlot', slotId })); }
-    async slotAdd(parentSlotId: string, data: TSRL.AddSlotMessage['data']){
+    async slotAdd(parentSlotId: string, data: AddSlotMessage['data']){
         let id = this.allocateId();
         await this.call({ $type: 'addSlot', data: { id, parent: { $type: 'reference', targetId: parentSlotId },  ...data } });
         return id;
     }
     
     async componentGet(componentId: string) { return (await this.call({ $type: 'getComponent', componentId })).data; }
-    async componentUpdate(componentId: string, members: TSRL.DataModel.Component['members']) { return (await this.call({ $type: 'updateComponent', data: { id: componentId, members } })); }
+    async componentUpdate(componentId: string, members: Component['members']) { return (await this.call({ $type: 'updateComponent', data: { id: componentId, members } })); }
     async componentRemove(componentId: string) { return (await this.call({ $type: 'removeComponent', componentId })); }
-    async componentAdd(containerSlotId: string, componentType: string, members: TSRL.DataModel.Component['members']) { 
+    async componentAdd(containerSlotId: string, componentType: string, members: Component['members']) { 
         let id = this.allocateId();
         await this.call({ $type: 'addComponent', data: { id, componentType, members }, containerSlotId });
         return id;
@@ -108,15 +109,15 @@ export class ResoniteLink {
     async importTexture2DRawData(
         width: number, height: number, 
         dataRGBA8: BinaryPayload, 
-        colorProfile: TSRL.DataModel.ColorProfile = 'sRGB'
+        colorProfile: ColorProfile = 'sRGB'
     ) { return (await this.call({ $type: 'importTexture2DRawData', width, height, colorProfile }, dataRGBA8)).assetURL; }
     async importTexture2DRawDataHDR(
         width: number, height: number, 
         dataRGBAFloat32: BinaryPayload
     ) { return (await this.call({ $type: 'importTexture2DRawDataHDR', width, height }, dataRGBAFloat32)).assetURL; }
     
-    async importMeshJSON(mesh: TSRL.Mesh.Mesh) { return (await this.call({ $type: 'importMeshJSON', ...mesh })).assetURL; }
-    async importMeshRawData(meta: Omit<TSRL.ImportMeshRawDataMessage, "$type">, data: BinaryPayload) { return (await this.call({ $type: 'importMeshRawData', ...meta }, data)).assetURL; }
+    async importMeshJSON(mesh: Mesh) { return (await this.call({ $type: 'importMeshJSON', ...mesh })).assetURL; }
+    async importMeshRawData(meta: Omit<ImportMeshRawDataMessage, "$type">, data: BinaryPayload) { return (await this.call({ $type: 'importMeshRawData', ...meta }, data)).assetURL; }
     
     async importAudioClipFile(filePath: string) { return (await this.call({ $type: 'importAudioClipFile', filePath })).assetURL; }
     async importAudioClipRawData(
@@ -138,3 +139,8 @@ export class ResoniteLink {
     
 
 }
+
+export default ResoniteLink;
+
+
+export type * from "./types/types.ts";

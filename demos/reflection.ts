@@ -1,6 +1,6 @@
 
 import { WebSocket } from "ws";
-import { ResoniteLink } from "./src/index.ts";
+import { ResoniteLink } from "..";
 
 const host = process.argv[2];
 if (!host) {

@@ -26,7 +26,7 @@ let link = await ResoniteLink.connect("ws://127.0.0.1:" + PORT, WebSocket as any
 ```
 
 
-For further usage instructions, take a look at the `demo.ts` script included in this repo.
+For further usage instructions, take a look at the `demos/`
 
 
 ## Contact
