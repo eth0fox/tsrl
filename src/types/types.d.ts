@@ -1,5 +1,6 @@
-
-namespace ResoniteLink.DataModel {
+/// <reference path="./primitives.d.ts" />
+/// <reference path="./meshImport.d.ts" />
+declare namespace TSRL.DataModel {
 
     export interface Member {
         $type?: string;
@@ -78,11 +79,11 @@ namespace ResoniteLink.DataModel {
     type AnyFieldValue = Field<any> | Array<any> | Reference | List;
 }
 
-namespace ResoniteLink {
+declare namespace TSRL {
 
     export interface BaseMessage {
         $type: string;
-    };
+    }
 
     export interface GetSlotMessage extends BaseMessage {
         $type: 'getSlot';
@@ -103,11 +104,11 @@ namespace ResoniteLink {
     }
     export interface AddSlotMessage {
         $type: 'addSlot';
-        data: Partial<ResoniteLink.DataModel.Slot>;
+        data: Partial<TSRL.DataModel.Slot>;
     }
     export interface UpdateSlotMessage {
         $type: 'updateSlot';
-        data: Partial<ResoniteLink.DataModel.Slot> & Pick<ResoniteLink.DataModel.Slot, 'id'>;
+        data: Partial<TSRL.DataModel.Slot> & Pick<TSRL.DataModel.Slot, 'id'>;
     }
     export interface RemoveSlotMessage {
         $type: 'removeSlot';
@@ -120,13 +121,13 @@ namespace ResoniteLink {
     }
     export interface AddComponentMessage {
         $type: 'addComponent';
-        data: Partial<ResoniteLink.DataModel.Component>;
+        data: Partial<TSRL.DataModel.Component>;
         // ID of the slot to add this component to
         containerSlotId: string;
     }
     export interface UpdateComponentMessage {
         $type: 'updateComponent';
-        data: Partial<ResoniteLink.DataModel.Component> & Pick<ResoniteLink.DataModel.Component, 'id'>;
+        data: Partial<TSRL.DataModel.Component> & Pick<TSRL.DataModel.Component, 'id'>;
     }
     export interface RemoveComponentMessage {
         $type: 'removeComponent';
@@ -142,23 +143,74 @@ namespace ResoniteLink {
     }
 
     interface ImportTexture2DRawMessageBase extends BaseMessage {
-        width: ResoniteLink.DataModel.int;
-        height: ResoniteLink.DataModel.int;
+        width: TSRL.DataModel.int;
+        height: TSRL.DataModel.int;
     }
     /**
      * Imports texture from raw 8-bit (RGBA) color data. Resonite will take care of encoding the data into a file format.
      */
     export interface ImportTexture2DRawDataMessage extends ImportTexture2DRawMessageBase {
         $type: 'importTexture2DRawData';
-        colorProfile: ResoniteLink.DataModel.ColorProfile;
+        colorProfile: TSRL.DataModel.ColorProfile;
     }
     /**
      * Imports texture from raw floating point color data (RGBA), allowing for HDR values.
      * Resonite will take care of encoding the data into a file format.
      */
-    export interface ImportTexture2DRawDataHDRMessage extends BaseMessage {
+    export interface ImportTexture2DRawDataHDRMessage extends ImportTexture2DRawMessageBase {
         $type: 'importTexture2DRawDataHDR';
     }
+
+
+    export type ImportMeshJSONMessage = BaseMessage & { $type: 'importMeshJSON'; } & TSRL.Mesh.Mesh;
+
+    // TODO
+    export type SubmeshRawData = any;
+    export type BlendshapeRawData = any;
+
+    export interface ImportMeshRawDataMessage extends BaseMessage {
+        $type: 'importMeshRawData';
+
+        vertexCount: TSRL.DataModel.int;
+        hasNormals: boolean;
+        hasTangents: boolean;
+        hasColors: boolean;
+        boneWeightCount: TSRL.DataModel.int;
+        uvChannelDimensions: TSRL.DataModel.int[];
+        submeshes: SubmeshRawData[];
+        blendshapes: BlendshapeRawData[];
+        bones: TSRL.Mesh.Bone[];
+        
+    }
+
+
+
+    /**
+     * Import a audio clip asset from a file on the local file system. Note that this must be a file
+     * format supported by Resonite, otherwise this will fail. 
+     * If you are unsure if the file format is supported, send raw audio data instead.
+     * Generally WAV, OGG & FLAC files are supported as audio clips.
+     */
+    export interface ImportAudioClipFileMessage extends BaseMessage {
+        $type: 'importAudioClipFile';
+        filePath: string;
+    }
+    export interface ImportAudioClipRawDataMessage extends BaseMessage {
+        $type: 'importAudioClipRawData';
+        /**
+         * Number of audio samples in this audio clip. This does NOT account for channel count and will be the same regardless of mono/stereo/5.1 etc.
+         */
+        sampleCount: TSRL.DataModel.int;
+        sampleRate: TSRL.DataModel.int;
+        /**
+         * Number of audio channels. 1 mono, 2 stereo, 6 is 5.1 surround
+         * It's your responsibility to make sure that Resonite supports given audio channel count
+         * The actual audio sample data is interleaved in the buffer
+         */
+        channelCount: TSRL.DataModel.int;
+    }
+
+
 
     
     export type ClientMessage = 
@@ -172,7 +224,11 @@ namespace ResoniteLink {
         | RemoveComponentMessage
         | ImportTexture2DFileMessage
         | ImportTexture2DRawDataMessage
-        | ImportTexture2DRawDataHDRMessage;
+        | ImportTexture2DRawDataHDRMessage
+        | ImportMeshJSONMessage
+        | ImportMeshRawDataMessage
+        | ImportAudioClipFileMessage
+        | ImportAudioClipRawDataMessage
     
     
     export interface Response {
@@ -183,10 +239,10 @@ namespace ResoniteLink {
 
     export interface SlotDataResponse extends Response {
         depth: number;
-        data: ResoniteLink.DataModel.CompleteWorker<ResoniteLink.DataModel.Slot>;
+        data: TSRL.DataModel.CompleteWorker<TSRL.DataModel.Slot>;
     }
     export interface ComponentDataResponse extends Response {
-        data: ResoniteLink.DataModel.CompleteWorker<ResoniteLink.DataModel.Component>;
+        data: TSRL.DataModel.CompleteWorker<TSRL.DataModel.Component>;
     }
     export interface AssetDataResponse extends Response {
         /**
@@ -211,6 +267,13 @@ namespace ResoniteLink {
         importTexture2DFile: AssetDataResponse;
         importTexture2DRawData: AssetDataResponse;
         importTexture2DRawDataHDR: AssetDataResponse;
+
+        importMeshJSON: AssetDataResponse;
+        importMeshRawData: AssetDataResponse;
+
+        importAudioClipFile: AssetDataResponse;
+        importAudioClipRawData: AssetDataResponse;
+
     }
 
 }

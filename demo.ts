@@ -2,7 +2,7 @@
 import { readFileSync } from "fs";
 import { inspect } from "node:util";
 import { WebSocket } from "ws";
-import { ResoniteLink } from "./index.ts";
+import { ResoniteLink } from "./src/index.js";
 
 const host = process.argv[2];
 if (!host) {

@@ -6,7 +6,7 @@ type VectorType<BaseType, Length extends 1 | 2 | 3 | 4> =
     never;
 
 
-namespace ResoniteLink.DataModel {
+declare namespace TSRL.DataModel {
     export type float = number;
     export type double = number;
     export type byte = number;
@@ -59,4 +59,62 @@ namespace ResoniteLink.DataModel {
     export type bool4 = VectorType<boolean, 4>;
 
 
+    export interface float2x2 {
+        m00: float; m01: float;
+        m10: float; m11: float;
+    }
+    export interface float3x3 {
+        m00: float; m01: float; m02: float;
+        m10: float; m11: float; m12: float;
+        m20: float; m21: float; m22: float;
+    }
+    export interface float4x4 {
+        m00: float; m01: float; m02: float; m03: float;
+        m10: float; m11: float; m12: float; m13: float;
+        m20: float; m21: float; m22: float; m23: float;
+        m30: float; m31: float; m32: float; m33: float;
+    }
+
+    export interface double2x2 {
+        m00: double; m01: double;
+        m10: double; m11: double;
+    }
+    export interface double3x3 {
+        m00: double; m01: double; m02: double;
+        m10: double; m11: double; m12: double;
+        m20: double; m21: double; m22: double;
+    }
+    export interface double4x4 {
+        m00: double; m01: double; m02: double; m03: double;
+        m10: double; m11: double; m12: double; m13: double;
+        m20: double; m21: double; m22: double; m23: double;
+        m30: double; m31: double; m32: double; m33: double;
+    }
+
+
+
+    export type ColorProfile = 
+        | "Linear" // Represents an sRGB-like color space (primaries and white point) with a linear transfer function, and a linear alpha channel. 
+        | "sRGB" // Represents the sRGB color space, with a linear alpha channel. 
+        | "sRGBAlpha" //Represents the sRGB color space, with gamma applied to the alpha channel. Note that this profile is deprecated and may be removed in the future
+
+    export interface color {
+        r: float;
+        g: float;
+        b: float;
+        a: float;
+    }
+    export interface colorX {
+        r: float;
+        g: float;
+        b: float;
+        a: float;
+        profile: ColorProfile;
+    }
+    export interface color32 {
+        r: byte;
+        g: byte;
+        b: byte;
+        a: byte;
+    }
 }
