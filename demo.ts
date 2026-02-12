@@ -4,7 +4,14 @@ import { inspect } from "node:util";
 import { WebSocket } from "ws";
 import { ResoniteLink } from "./index.ts";
 
-let link = await ResoniteLink.connect('ws://127.0.0.1:2572', WebSocket as any);
+const host = process.argv[2];
+if (!host) {
+    console.error("Usage: demo.ts ws://127.0.0.1:1337");
+    process.exit(1);
+}
+
+
+let link = await ResoniteLink.connect(host, WebSocket as any);
 
 let testSlot = await link.slotAdd("Root", {
     name: { value: "Test Slot" }
@@ -18,7 +25,6 @@ let material = await link.componentAdd(testSlot, "[FrooxEngine]FrooxEngine.Unlit
 let meshRenderer = await link.componentAdd(testSlot, "[FrooxEngine]FrooxEngine.MeshRenderer", {
     Mesh: { $type: 'reference', targetId: quadMesh  },
     Materials: { $type: 'list', elements: [
-        // BUG: It seems there's a resonite bug preventing materials from being assigned this way. Assign manually using an Inspector.
         { $type: 'reference', targetId: material }
     ]}
 })
@@ -34,6 +40,7 @@ let texture = await link.componentAdd(testSlot, "[FrooxEngine]FrooxEngine.Static
 await link.componentUpdate(material, {
     Texture: { $type: 'reference', targetId: texture }
 });
+console.log("Done, check Resonite!");
 
 
 process.on('SIGINT', async  () => {

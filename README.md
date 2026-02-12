@@ -31,4 +31,4 @@ For further usage instructions, take a look at the `demo.ts` script included in 
 
 ## Contact
 
-I'm `TaylorRobinson` in Resonite, or `u1f98a` on Discord.
+I'm `eth0fox` in Resonite, or `u1f98a` on Discord.
